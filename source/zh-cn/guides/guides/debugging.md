@@ -308,3 +308,4 @@ cy.now('task', 123)
 你可以包含该插件[cypress-failed-log](https://github.com/bahmutov/cypress-failed-log)在你的测试中. 如果测试失败,此插件会将Cypress命令列表写入终端以及JSON文件.
 
 {% imgTag /img/api/debug/failed-log.png "cypress-failed-log terminal output" %}
+
