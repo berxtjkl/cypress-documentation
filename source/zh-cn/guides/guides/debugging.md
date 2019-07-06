@@ -3,7 +3,7 @@ title: 调试工具
 ---
 
 {% note info %}
-# {% fa fa-graduation-cap %} 你将学到
+# {% fa fa-graduation-cap %} 通过这篇文档你将会学习到
 
 - Cypress如何在同一个事件循环中运行你的代码, 并且保持调试简单易懂
 - Cypress如何接受标准的开发工具
