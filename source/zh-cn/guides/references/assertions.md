@@ -50,7 +50,7 @@ Cypress绑定了流行的{% url 'Chai' assertions#Chai %}断言库，扩展插�
 | ownProperty(*name*) {% aliases haveOwnProperty own.property %} | `expect('test').to.have.ownProperty('length')` |
 | ownPropertyDescriptor(*name*) {% aliases haveOwnPropertyDescriptor %} | `expect({a: 1}).to.have.ownPropertyDescriptor('a')` |
 | lengthOf(*value*) | `expect('test').to.have.lengthOf(3)` |
-| match(*regexp*) {% aliases matches %} | `expect('testing').to.match(/^test/)` |
+| match(*RegExp*) {% aliases matches %} | `expect('testing').to.match(/^test/)` |
 | string(*string*) | `expect('testing').to.have.string('test')` |
 | key(*key1*, *[key2]*, *[...]*) {% aliases keys %} | `expect({ pass: 1, fail: 2 }).to.have.key('pass')` |
 | throw(*constructor*) {% aliases throws Throw %} | `expect(fn).to.throw(Error)` |
@@ -132,7 +132,7 @@ Cypress绑定了流行的{% url 'Chai' assertions#Chai %}断言库，扩展插�
 | data(*name*, *[value]*) | `expect($el).to.have.data('foo', 'bar')` |
 | class(*className*) | `expect($el).to.have.class('foo')` |
 | id(*id*) | `expect($el).to.have.id('foo')` |
-| html(*html*)  | `expect($el).to.have.html('I love testing')` |
+| html(*HTML*)  | `expect($el).to.have.html('I love testing')` |
 | text(*text*) | `expect($el).to.have.text('I love testing')` |
 | value(*value*) | `expect($el).to.have.value('test@dev.com')` |
 | visible | `expect($el).to.be.visible` |
@@ -185,7 +185,7 @@ Cypress绑定了流行的{% url 'Chai' assertions#Chai %}断言库，扩展插�
 - 使用npm安装任何已经存在的`chai`库并在你的测试文件或支撑文件中导入它。
 
 {% note info %}
-{% url '参考我们的使用新断言扩展chai的示例' recipes#Adding-Chai-Assertions %}
+{% url '参考我们的使用新断言扩展chai的示例' recipes#Fundamentals %}
 {% endnote %}
 
 # 一般断言

@@ -53,10 +53,10 @@ You can find an example in the {% url "cypress-example-todomvc custom commands" 
 
 ## Types for custom assertions
 
-If you extend Cypress assertions, you can extend the assertion types to make the TypeScript compiler understand the new methods. See the {% url "Recipe: Adding Chai Assertions" https://github.com/cypress-io/cypress-example-recipes#adding-chai-assertions %} for instructions.
+If you extend Cypress assertions, you can extend the assertion types to make the TypeScript compiler understand the new methods. See the {% url "Recipe: Adding Chai Assertions" recipes#Fundamentals %} for instructions.
 
 ## Additional information
 
-See the excellent advice on {% url "setting Cypress using TypeScript" https://basarat.gitbooks.io/typescript/docs/testing/cypress.html %} in the {% url "TypeScript Deep Dive" https://basarat.gitbooks.io/typescript/content/ %} e-book by {% url "Basarat Syed" https://twitter.com/basarat %}.
+See the excellent advice on {% url "setting Cypress using TypeScript" https://basarat.gitbooks.io/typescript/docs/testing/cypress.html %} in the {% url "TypeScript Deep Dive" https://basarat.gitbooks.io/typescript/content/ %} e-book by {% url "Basarat Syed" https://twitter.com/basarat %}. Take a look at {% url "this video" https://www.youtube.com/watch?v=1Vr1cAN_CLA %} Basarat has recorded and the accompanying repo {% url basarat/cypress-ts https://github.com/basarat/cypress-ts %}.
 
-We have published a utility npm module, {% url "add-typescript-to-cypress" https://github.com/bahmutov/add-typescript-to-cypress %}, that sets TypeScript test transpilation for you with a single command.
+{% fa fa-github %} We have published a utility npm module, {% url "add-typescript-to-cypress" https://github.com/bahmutov/add-typescript-to-cypress %}, that sets TypeScript test transpilation for you with a single command.

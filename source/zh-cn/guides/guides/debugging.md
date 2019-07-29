@@ -116,6 +116,8 @@ it('let me debug like a fiend', function() {
 - 使用运行相同的测试{% url '`--browser chrome`' command-line#cypress-run-browser-lt-browser-name-or-path-gt %}. 问题可能是与Electron浏览器有关.
 - 如果隔离到Electron浏览器. 在Electron和Chrome中运行相同的测试,然后比较屏幕截图/视频. 查找并隔离命令日志中的任何差异.
 
+{% partial chromium_download %}
+
 ## 清除Cypress缓存
 
 如果你在安装Cypress期间遇到问题. 尝试清除Cypress缓存的内容.
@@ -174,7 +176,7 @@ sudo ln `which chrome` /usr/local/bin/google-chrome
 
 在Windows上, Cypress扫描以下位置以尝试查找每个浏览器:
 
-浏览器名称| Expected Path
+浏览器名称| 预期的路径
 --- | ---
 `chrome` | `C:/Program Files (x86)/Google/Chrome/Application/chrome.exe`
 `chromium` | `C:/Program Files (x86)/Google/chrome-win32/chrome.exe`
@@ -186,7 +188,7 @@ sudo ln `which chrome` /usr/local/bin/google-chrome
 
 ## Chrome扩展程序白名单
 
-Cypress在Test Runner中使用Chrome扩展程序以便正常运行. 如果你或你的公司将特定的Chrome扩展程序列入白名单, 这可能会导致运行Cypress的问题. 你需要让管理员将下面的Cypress扩展ID列入白名单:
+Cypress在测试运行器中使用Chrome扩展程序以便正常运行. 如果你或你的公司将特定的Chrome扩展程序列入白名单, 这可能会导致运行Cypress的问题. 你需要让管理员将下面的Cypress扩展ID列入白名单:
 
 ```sh
 caljajdfkjjjdehjdoimjkkakekklcck
@@ -308,3 +310,118 @@ cy.now('task', 123)
 你可以包含该插件[cypress-failed-log](https://github.com/bahmutov/cypress-failed-log)在你的测试中. 如果测试失败,此插件会将Cypress命令列表写入终端以及JSON文件.
 
 {% imgTag /img/api/debug/failed-log.png "cypress-failed-log terminal output" %}
+
+# Cypress之hack操作
+
+如果你想深入Cypress并自己编辑代码, 你可以做到这一点. Cypress的代码是开源的, 并在一个版本{% url "MIT执照" https://github.com/cypress-io/cypress/blob/develop/LICENSE %}下获得许可. 我们在下面概述了一些入门提示. 
+
+## 贡献
+
+如果你想直接参与Cypress代码, 我们很乐意得到你的帮助！ 请查看我们的{% url "贡献引导" https://github.com/cypress-io/cypress/blob/develop/CONTRIBUTING.md %}来了解你可以贡献的多种方式. 
+
+## 单独运行Cypress应用程序
+
+Cypress附带了一个解析参数的npm CLI模块, 启动Xvfb服务器(如有必要), 然后打开构建于之上的{% url "Electron" https://electronjs.org/ %}测试运行器. 关于你为什么要这样做的一些常见情况是:
+
+- 调试Cypress没有启动或挂起
+- 调试与npm CLI模块解析CLI参数的方式相关的问题
+
+以下是在没有npm CLI模块的情况下直接启动Cypress应用程序的方法. 首先, 使用{% url "`cypress cache path`" command-line#cypress-cache-path %}命令找到二进制文件的安装位置.
+
+例如, 在Linux机器上:
+
+```shell
+npx cypress cache path
+/root/.cache/Cypress
+```
+
+然后, 尝试进行冒烟测试, 验证应用程序是否具有主机上存在的所有必需依赖项:
+
+```shell
+/root/.cache/Cypress/3.3.1/Cypress/Cypress --smoke-test --ping=101
+101
+```
+
+如果缺少依赖项, 应用程序应该打印一条错误消息. 你可以通过设置{% url "环境变量 ELECTRON_ENABLE_LOGGING" https://electronjs.org/docs/api/environment-variables %}来查看Electron详细日志消息:
+
+```shell
+ELECTRON_ENABLE_LOGGING=true DISPLAY=10.130.4.201:0 /root/.cache/Cypress/3.3.1/Cypress/Cypress --smoke-test --ping=101
+[809:0617/151243.281369:ERROR:bus.cc(395)] Failed to connect to the bus: Failed to connect to socket /var/run/dbus/system_bus_socket: No such file or directory
+101
+```
+
+如果冒烟测试无法执行, 检查是否缺少共享库(Linux机器上的常见问题, 没有所有Cypress依赖项).
+
+```shell
+ldd /home/person/.cache/Cypress/3.3.1/Cypress/Cypress
+	linux-vdso.so.1 (0x00007ffe9eda0000)
+	libnode.so => /home/person/.cache/Cypress/3.3.1/Cypress/libnode.so (0x00007fecb43c8000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fecb41ab000)
+	libgtk-3.so.0 => not found
+	libgdk-3.so.0 => not found
+  ...
+```
+
+**小建议:** 使用{% url "Cypress Docker image" docker %}或者通过从我们的官方Docker镜像中复制它们来安装依赖项.
+
+**注意:** 详细电子记录可能会显示仍然允许Cypress正常工作的警告. 例如, 尽管下面有可怕的输出, 但Cypress测试跑步者正常打开:
+
+```shell
+ELECTRON_ENABLE_LOGGING=true DISPLAY=10.130.4.201:0 /root/.cache/Cypress/3.3.1/Cypress/Cypress
+[475:0617/150421.326986:ERROR:bus.cc(395)] Failed to connect to the bus: Failed to connect to socket /var/run/dbus/system_bus_socket: No such file or directory
+[475:0617/150425.061526:ERROR:bus.cc(395)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[475:0617/150425.079819:ERROR:bus.cc(395)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[475:0617/150425.371013:INFO:CONSOLE(73292)] "%cDownload the React DevTools for a better development experience: https://fb.me/react-devtools
+You might need to use a local HTTP server (instead of file://): https://fb.me/react-devtools-faq", source: file:///root/.cache/Cypress/3.3.1/Cypress/resources/app/packages/desktop-gui/dist/app.js (73292)
+```
+
+运行测试运行器, 你还可以看到详细的Cypress日志
+
+```shell
+DEBUG=cypress* DISPLAY=10.130.4.201:0 /root/.cache/Cypress/3.3.1/Cypress/Cypress --smoke-test --ping=101
+cypress:ts Running without ts-node hook in environment "production" +0ms
+cypress:server:cypress starting cypress with argv [ '/root/.cache/Cypress/3.3.1/Cypress/Cypress', '--smoke-test', '--ping=101' ] +0ms
+cypress:server:args argv array: [ '/root/.cache/Cypress/3.3.1/Cypress/Cypress', '--smoke-test', '--ping=101' ] +0ms
+cypress:server:args argv parsed: { _: [ '/root/.cache/Cypress/3.3.1/Cypress/Cypress' ], smokeTest: true, ping: 101, cwd: '/root/.cache/Cypress/3.3.1/Cypress/resources/app/packages/server' } +7ms
+cypress:server:args options { _: [ '/root/.cache/Cypress/3.3.1/Cypress/Cypress' ], smokeTest: true, ping: 101, cwd: '/root/.cache/Cypress/3.3.1/Cypress/resources/app/packages/server', config: {} } +2ms
+cypress:server:args argv options: { _: [ '/root/.cache/Cypress/3.3.1/Cypress/Cypress' ], smokeTest: true, ping: 101, cwd: '/root/.cache/Cypress/3.3.1/Cypress/resources/app/packages/server', config: {}, pong: 101 } +1ms
+cypress:server:appdata path: /root/.config/Cypress/cy/production +0ms
+cypress:server:cypress starting in mode smokeTest +356ms
+101
+cypress:server:cypress about to exit with code 0 +4ms
+```
+
+## 编辑已安装的Cypress代码
+
+已安装的测试运行器配有完全转换后的版本, 你可以破解未经过混淆的JavaScript源代码. 你可能希望直接修改已安装的测试运行器代码:
+
+- 调查难以重现的机器上发生的错误
+- 在打开拉取请求之前更改Cypress的运行时行为
+- 玩得开心🎉
+
+首先, 使用{% url "`cypress cache path`" command-line#cypress-cache-path %}命令打印安装二进制文件的位置.
+
+例如, 在Mac上:
+
+```shell
+npx cypress cache path
+/Users/jane/Library/Caches/Cypress
+```
+
+然后, 在任何代码编辑器中打开以下路径的源代码. 一定要对要编辑的测试运行器的所需版本进行替换`3.3.1`字样的操作.
+
+```text
+/Users/jane/Library/Caches/Cypress/3.3.1/Cypress.app/Contents/Resources/app/packages/
+```
+
+你可以在JavaScript代码中更改任何内容:
+
+{% imgTag /img/guides/source-code.png "Source code of the 测试运行器 in a text editor" %}
+
+当结束之时, 如有必要, 删除已编辑的测试运行器版本并重新安装Cypress官方版本以返回官方发布的代码.
+
+```shell
+rm -rf /Users/jane/Library/Caches/Cypress/3.3.1
+npm install cypress@3.3.1
+```
+
